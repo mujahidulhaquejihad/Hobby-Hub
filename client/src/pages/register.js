@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-// 1. Import 'Link' and only import 'useNavigate' once.
 import { useNavigate, Link } from 'react-router-dom';
 import { register } from '../redux/actions/authAction';
+import logoImg from '../images/UniBook.png';
 
 const Register = () => {
     const { auth, alert } = useSelector(state => state);
@@ -17,9 +17,7 @@ const Register = () => {
     const [typeCfPass, setTypeCfPass] = useState(false);
 
     useEffect(() => {
-        // 2. Use the 'navigate' function instead of the old 'history' variable
         if (auth.token) navigate("/");
-    // 3. Add 'navigate' to the dependency array instead of 'history'
     }, [auth.token, navigate]);
 
     const handleChangeInput = (e) => {
@@ -34,166 +32,148 @@ const Register = () => {
 
     return (
         <div className="auth_page">
-            <form onSubmit={handleSubmit} className="inner-shadow">
-                <h3 className="text-uppercase text-center mb-4 auth-heading">
-                    HobbyHub
-                </h3>
-                <div className="mb-3">
-                    <label htmlFor="fullname" className="form-label">
-                        Full name
-                    </label>
-                    <div className="outer-shadow hover-in-shadow form-input-wrap">
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="fullname"
-                            onChange={handleChangeInput}
-                            value={fullname}
-                            name="fullname"
-                            style={{ background: `${alert.fullname ? "#fd2d6a14" : ""} ` }}
-                        />
-                    </div>
-                    <small className="form-text text-danger">
-                        {alert.fullname ? alert.fullname : ""}
-                    </small>
+            <div className="auth_card">
+                <div className="auth_logo">
+                    <img src={logoImg} alt="UniBook" className="auth_logo_img" />
+                    <h1 className="auth_logo_text">UniBook</h1>
+                    <p className="auth_tagline">Join the community. Start sharing today.</p>
                 </div>
-
-                <div className="mb-3">
-                    <label htmlFor="username" className="form-label">
-                        User name
-                    </label>
-                    <div className="outer-shadow hover-in-shadow form-input-wrap">
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="username"
-                            onChange={handleChangeInput}
-                            value={username.toLowerCase().replace(/ /g, "")}
-                            name="username"
-                            style={{ background: `${alert.username ? "#fd2d6a14" : ""} ` }}
-                        />
+                <form onSubmit={handleSubmit}>
+                    <div className="auth_field">
+                        <label htmlFor="reg-fullname" className="auth_label">
+                            Full name
+                        </label>
+                        <div className={`auth_input_wrap ${alert.fullname ? "auth_input_error" : ""}`}>
+                            <input
+                                type="text"
+                                className="auth_input"
+                                id="reg-fullname"
+                                placeholder="Jane Doe"
+                                onChange={handleChangeInput}
+                                value={fullname}
+                                name="fullname"
+                            />
+                        </div>
+                        {alert.fullname && <p className="auth_error">{alert.fullname}</p>}
                     </div>
-                    <small className="form-text text-danger">
-                        {alert.username ? alert.username : ""}
-                    </small>
-                </div>
-
-                <div className="mb-3">
-                    <label htmlFor="email" className="form-label">
-                        Email address
-                    </label>
-                    <div className="outer-shadow hover-in-shadow form-input-wrap">
-                        <input
-                            type="email"
-                            className="form-control"
-                            id="email"
-                            aria-describedby="emailHelp"
-                            onChange={handleChangeInput}
-                            value={email}
-                            name="email"
-                            style={{ background: `${alert.email ? "#fd2d6a14" : ""} ` }}
-                        />
+                    <div className="auth_field">
+                        <label htmlFor="reg-username" className="auth_label">
+                            Username
+                        </label>
+                        <div className={`auth_input_wrap ${alert.username ? "auth_input_error" : ""}`}>
+                            <input
+                                type="text"
+                                className="auth_input"
+                                id="reg-username"
+                                placeholder="janedoe"
+                                onChange={handleChangeInput}
+                                value={username.toLowerCase().replace(/ /g, "")}
+                                name="username"
+                            />
+                        </div>
+                        {alert.username && <p className="auth_error">{alert.username}</p>}
                     </div>
-                    <small className="form-text text-danger">
-                        {alert.email ? alert.email : ""}
-                    </small>
-                </div>
-
-                <div className="mb-3">
-                    <label htmlFor="password" className="form-label">
-                        Password
-                    </label>
-                    <div className="pass">
-                        <div className="outer-shadow hover-in-shadow form-input-wrap">
+                    <div className="auth_field">
+                        <label htmlFor="reg-email" className="auth_label">
+                            Email
+                        </label>
+                        <div className={`auth_input_wrap ${alert.email ? "auth_input_error" : ""}`}>
+                            <input
+                                type="email"
+                                className="auth_input"
+                                id="reg-email"
+                                placeholder="you@example.com"
+                                onChange={handleChangeInput}
+                                value={email}
+                                name="email"
+                            />
+                        </div>
+                        {alert.email && <p className="auth_error">{alert.email}</p>}
+                    </div>
+                    <div className="auth_field">
+                        <label htmlFor="reg-password" className="auth_label">
+                            Password
+                        </label>
+                        <div className={`auth_input_wrap ${alert.password ? "auth_input_error" : ""}`}>
                             <input
                                 type={typePass ? "text" : "password"}
-                                className="form-control"
-                                id="password"
+                                className="auth_input"
+                                id="reg-password"
+                                placeholder="••••••••"
                                 onChange={handleChangeInput}
                                 value={password}
                                 name="password"
-                                style={{
-                                    background: `${alert.password ? "#fd2d6a14" : ""} `,
-                                }}
                             />
-                            <small onClick={() => setTypePass(!typePass)}>
+                            <button
+                                type="button"
+                                className="auth_pass_toggle"
+                                onClick={() => setTypePass(!typePass)}
+                                aria-label={typePass ? "Hide password" : "Show password"}
+                            >
                                 {typePass ? "Hide" : "Show"}
-                            </small>
+                            </button>
                         </div>
+                        {alert.password && <p className="auth_error">{alert.password}</p>}
                     </div>
-                    <small className="form-text text-danger">
-                        {alert.password ? alert.password : ""}
-                    </small>
-                </div>
-
-                <div className="mb-3">
-                    <label htmlFor="cf_password" className="form-label">
-                        Confirm Password
-                    </label>
-                    <div className="pass">
-                        <div className="outer-shadow hover-in-shadow form-input-wrap">
+                    <div className="auth_field">
+                        <label htmlFor="reg-cf_password" className="auth_label">
+                            Confirm password
+                        </label>
+                        <div className={`auth_input_wrap ${alert.cf_password ? "auth_input_error" : ""}`}>
                             <input
                                 type={typeCfPass ? "text" : "password"}
-                                className="form-control"
-                                id="cf_password"
+                                className="auth_input"
+                                id="reg-cf_password"
+                                placeholder="••••••••"
                                 onChange={handleChangeInput}
                                 value={cf_password}
                                 name="cf_password"
-                                style={{
-                                    background: `${alert.cf_password ? "#fd2d6a14" : ""} `,
-                                }}
                             />
-                            <small onClick={() => setTypeCfPass(!typeCfPass)}>
+                            <button
+                                type="button"
+                                className="auth_pass_toggle"
+                                onClick={() => setTypeCfPass(!typeCfPass)}
+                                aria-label={typeCfPass ? "Hide password" : "Show password"}
+                            >
                                 {typeCfPass ? "Hide" : "Show"}
-                            </small>
+                            </button>
+                        </div>
+                        {alert.cf_password && <p className="auth_error">{alert.cf_password}</p>}
+                    </div>
+                    <div className="auth_toggle_group">
+                        <div className="auth_toggle_option">
+                            <input
+                                type="radio"
+                                id="reg-male"
+                                name="gender"
+                                value="male"
+                                checked={userData.gender === "male"}
+                                onChange={handleChangeInput}
+                            />
+                            <label htmlFor="reg-male">Male</label>
+                        </div>
+                        <div className="auth_toggle_option">
+                            <input
+                                type="radio"
+                                id="reg-female"
+                                name="gender"
+                                value="female"
+                                checked={userData.gender === "female"}
+                                onChange={handleChangeInput}
+                            />
+                            <label htmlFor="reg-female">Female</label>
                         </div>
                     </div>
-                    <small className="form-text text-danger">
-                        {alert.cf_password ? alert.cf_password : ""}
-                    </small>
-                </div>
-
-                <div className="d-flex justify-content-evenly  mx-0 mb-1">
-                    <label htmlFor="male">
-                        Male:
-                        <input
-                            type="radio"
-                            id="male"
-                            name="gender"
-                            value="male"
-                            defaultChecked
-                            onChange={handleChangeInput}
-                        />
-                    </label>
-
-                    <label htmlFor="female">
-                        Female:
-                        <input
-                            type="radio"
-                            id="female"
-                            name="gender"
-                            value="female"
-                            onChange={handleChangeInput}
-                        />
-                    </label>
-                </div>
-
-                <button
-                    type="submit"
-                    className="btn-1 w-100 d-flex outer-shadow hover-in-shadow justify-content-center"
-                >
-                    Register
-                </button>
-                <p className="my-2">
-                    Already have an account?{" "}
-                    <Link to="/" style={{ color: "crimson" }}>
-                        Login Now.
-                    </Link>
-                </p>
-            </form>
+                    <button type="submit" className="auth_submit">
+                        Create account
+                    </button>
+                    <p className="auth_footer">
+                        Already have an account? <Link to="/">Sign in</Link>
+                    </p>
+                </form>
+            </div>
         </div>
     );
-}
+};
 
 export default Register;
-

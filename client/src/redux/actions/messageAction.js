@@ -4,6 +4,7 @@ import { postDataAPI, getDataAPI } from '../../utils/fetchData';
 export const MESSAGE_TYPES = {
     ADD_USER: 'ADD_USER',
     ADD_MESSAGE: 'ADD_MESSAGE',
+    UPDATE_MESSAGE: 'UPDATE_MESSAGE',
     GET_CONVERSATIONS: 'GET_CONVERSATIONS',
     GET_MESSAGES: 'GET_MESSAGES',
 };
@@ -18,17 +19,18 @@ export const addUser = ({ user }) => async (dispatch, getState) => {
     }
 };
 
-export const addMessage = ({ msg, auth, socket }) => async (dispatch) => {
+export const addMessage = ({ msg, auth }) => async (dispatch) => {
     dispatch({ type: MESSAGE_TYPES.ADD_MESSAGE, payload: msg });
-    
-    socket.emit('addMessage', msg);
 
     try {
-        await postDataAPI('messages', msg, auth.token);
+        const res = await postDataAPI('message', msg, auth.token);
+        if (res?.data?.message) {
+            dispatch({ type: MESSAGE_TYPES.UPDATE_MESSAGE, payload: { optimistic: msg, saved: res.data.message } });
+        }
     } catch (err) {
         dispatch({
             type: GLOBALTYPES.ALERT,
-            payload: { error: err.response.data.msg }
+            payload: { error: err.response?.data?.msg || 'Failed to send message' }
         });
     }
 };
@@ -64,7 +66,7 @@ export const getMessages = ({ auth, id, page = 1 }) => async (dispatch) => {
         const res = await getDataAPI(`message/${id}?limit=${page * 9}`, auth.token);
         dispatch({
             type: MESSAGE_TYPES.GET_MESSAGES,
-            payload: { messages: res.data.messages, result: res.data.result }
+            payload: { messages: res.data.messages, result: res.data.result, page }
         });
     } catch (err) {
         dispatch({

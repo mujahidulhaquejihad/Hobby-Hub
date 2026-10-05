@@ -85,7 +85,7 @@ const LeftSide = () => {
                     type="text"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search..."
+                    placeholder="Search by name or username to message anyone"
                 />
                 <button style={{ display: "none" }} type="submit">Search</button>
             </form>

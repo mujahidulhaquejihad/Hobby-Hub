@@ -37,7 +37,7 @@ export const createComment = ({post, newComment, auth, socket}) => async (dispat
         content: newComment.reply
           ? newComment.content
           : post.content,
-        image: post.images[0].url,
+        image: post.images?.[0]?.url || "",
       };
 
       dispatch(createNotify({ msg, auth, socket }));

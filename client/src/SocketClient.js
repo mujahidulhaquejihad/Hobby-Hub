@@ -105,7 +105,7 @@ const SocketClient = () => {
         msg.user.username + " " + msg.text,
         msg.user.avatar,
         msg.url,
-        "HobbyHub"
+        "UniBook"
       );
     });
     return () => socket.off("createNotifyToClient");
@@ -122,10 +122,9 @@ const SocketClient = () => {
   useEffect(() => {
     socket.on("addMessageToClient", (msg) => {
       dispatch({ type: MESSAGE_TYPES.ADD_MESSAGE, payload: msg });
-
     });
     return () => socket.off("addMessageToClient");
-  }, []);
+  }, [socket, dispatch]);
 
   return (
     <>

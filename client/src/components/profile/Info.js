@@ -1,4 +1,5 @@
 import React, { useState, useEffect} from 'react';
+import { Link } from 'react-router-dom';
 import Avatar from '../Avatar';
 import EditProfile from './EditProfile';
 import FollowBtn from '../FollowBtn';
@@ -16,13 +17,13 @@ const Info = ({id, auth, profile, dispatch}) => {
     const [showFollowing, setShowFollowing] = useState(false);
 
     useEffect(() => {
-      if (id === auth.user._id) {
-          setUserData([auth.user]);
-      }else{
-        const newData = profile.users.filter(user => user._id === id);
+      if (id === auth.user?._id) {
+        setUserData([auth.user]);
+      } else {
+        const newData = profile.users.filter((user) => user._id === id);
         setUserData(newData);
       }
-    }, [id, auth, dispatch, profile.users]);
+    }, [id, auth, auth.user, dispatch, profile.users]);
 
     useEffect(() => {
       if (showFollowers || showFollowing || onEdit) {
@@ -46,25 +47,28 @@ const Info = ({id, auth, profile, dispatch}) => {
             <div className="info_content">
               <div className="info_content_title">
                 <h2>{user.username}</h2>
-                {user._id === auth.user._id ? (
-                  <button
-                    className="btn-1 outer-shadow hover-in-shadow"
-                    onClick={() => setOnEdit(true)}
-                  >
-                    Edit Profile
-                  </button>
+                {user._id === auth.user?._id ? (
+                  <>
+                    <button
+                      className="btn-1 outer-shadow hover-in-shadow"
+                      onClick={() => setOnEdit(true)}
+                    >
+                      Edit Profile
+                    </button>
+                    <button
+                      className="btn-1 outer-shadow hover-in-shadow"
+                      onClick={() => setChangePassword(true)}
+                    >
+                      Change password
+                    </button>
+                  </>
                 ) : (
-                  <FollowBtn user={user} />
-                )}
-                {user._id === auth.user._id ? (
-                  <button
-                    className="btn-1 outer-shadow hover-in-shadow"
-                    onClick={() => setChangePassword(true)}
-                  >
-                    change password
-                  </button>
-                ) : (
-                  <FollowBtn user={user} />
+                  <>
+                    <FollowBtn user={user} />
+                    <Link to={`/message/${user._id}`} className="btn-1 btn_message">
+                      Message
+                    </Link>
+                  </>
                 )}
               </div>
 

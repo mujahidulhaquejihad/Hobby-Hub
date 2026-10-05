@@ -32,22 +32,25 @@ const PostThumb = ({ posts, result }) => {
     };
     return (
       <div className="post_thumb">
-        {posts && posts.map((post) => (
-          <Link to={`/post/${post._id}`} key={post._id}>
-            <div className="post_thumb_display">
-              {post.images[0].url.match(/video/i)
-                ? videoShow(post.images[0].url, theme)
-                : imageShow(post.images[0].url, theme)
-              }
-
-
-              <div className="post_thumb_menu">
-                <i className="far fa-thumbs-up">{post.likes.length}</i>
-                <i className="far fa-comments">{post.comments.length}</i>
+        {posts && posts.map((post) => {
+          const firstMedia = post.images?.[0]?.url;
+          const isVideo = typeof firstMedia === "string" && firstMedia.match(/video/i);
+          return (
+            <Link to={`/post/${post._id}`} key={post._id}>
+              <div className="post_thumb_display">
+                {firstMedia ? (
+                  isVideo ? videoShow(firstMedia, theme) : imageShow(firstMedia, theme)
+                ) : (
+                  <div className="post_thumb_placeholder">No media</div>
+                )}
+                <div className="post_thumb_menu">
+                  <i className="far fa-thumbs-up">{post.likes?.length ?? 0}</i>
+                  <i className="far fa-comments">{post.comments?.length ?? 0}</i>
+                </div>
               </div>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </div>
     );
 };

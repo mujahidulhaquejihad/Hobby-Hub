@@ -1,18 +1,9 @@
 import React from 'react';
+import '../../styles/loading.css'; // Import the CSS file
 
 const Loading = () => {
     return (
-        <div className="position-fixed w-100 h-100 text-center loading"
-            style={{
-                background: '#0008',
-                color: 'white',
-                top: 0,
-                left: 0,
-                zIndex: 50,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center'
-            }}>
+        <div className="loading-overlay">
             
             <svg width="65" height="65" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
                 <g>
@@ -22,8 +13,8 @@ const Loading = () => {
                 </g>
             </svg>
             
-            {/* The corrected tag is below. It uses a <div> instead of <text> */}
-            <div style={{fontSize: '1.5rem', marginTop: '1rem', position: 'absolute', top: '55%'}}>Loading...</div>
+            <div className="loading-text">Loading...</div>
+
         </div>
     );
 };

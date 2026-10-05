@@ -4,6 +4,7 @@ const initialState = {
     users: [],
     resultUsers: 0,
     data: [],
+    resultData: 0,
     firstLoad: false,
 };
 
@@ -27,6 +28,27 @@ const messageReducer = (state = initialState, action) => {
                         : user
                 ),
             };
+        case MESSAGE_TYPES.UPDATE_MESSAGE: {
+            const { optimistic, saved } = action.payload;
+            const created = new Date(optimistic.createdAt).getTime();
+            const data = state.data.map(m => {
+                if (m._id === saved._id) return saved;
+                if (!m._id && m.sender === optimistic.sender && m.recipient === optimistic.recipient) {
+                    const t = new Date(m.createdAt).getTime();
+                    if (Math.abs(t - created) < 3000) return saved;
+                }
+                return m;
+            });
+            return {
+                ...state,
+                data,
+                users: state.users.map(user =>
+                    user._id === saved.recipient || user._id === saved.sender
+                        ? { ...user, text: saved.text, media: saved.media, createdAt: saved.createdAt }
+                        : user
+                ),
+            };
+        }
         case MESSAGE_TYPES.GET_CONVERSATIONS:
             return {
                 ...state,
@@ -34,11 +56,15 @@ const messageReducer = (state = initialState, action) => {
                 resultUsers: action.payload.result,
                 firstLoad: true,
             };
-        case MESSAGE_TYPES.GET_MESSAGES:
+        case MESSAGE_TYPES.GET_MESSAGES: {
+            const { messages, result, page = 1 } = action.payload;
+            const reversed = [...(messages || [])].reverse();
             return {
                 ...state,
-                data: action.payload.messages.reverse(),
+                data: page > 1 ? [...reversed, ...state.data] : reversed,
+                resultData: result ?? 0,
             };
+        }
         default:
             return state;
     }

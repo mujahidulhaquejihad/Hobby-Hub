@@ -22,63 +22,57 @@ const Menu = () => {
   };
 
   return (
-    <div className="menu">
-      <ul className="navbar-nav flex-row mb-2 mb-lg-0">
+    <nav className="menu">
+      <ul className="menu_nav">
         {navLinks.map((link, index) => (
-          <li className={`nav-item px-2 ${isActive(link.path)}`} key={index}>
-            <Link className={`nav-link `} to={link.path}>
-              <span className={`material-icons `}>{link.icon}</span>
+          <li className={`menu_nav_item ${isActive(link.path)}`} key={index}>
+            <Link className="menu_nav_btn" to={link.path}>
+              <span className="material-icons menu_nav_icon">{link.icon}</span>
+              <span className="menu_nav_label">{link.label}</span>
             </Link>
           </li>
         ))}
 
-        <li className="nav-item dropdown" style={{ opacity: "1" }}>
+        <li className="menu_nav_item dropdown">
           <span
-            className="nav-link position-relative"
-            id="navbarDropdown"
+            className="menu_nav_btn menu_nav_btn_icon"
+            id="navbarNotify"
             role="button"
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
-            <span
-              style={{ color: notify.data.length > 0 ? "var(--c1)" : "" }}
-              className={`material-icons `}
-            >
+            <span className={`material-icons ${notify.data.length > 0 ? "menu_nav_icon_alert" : ""}`}>
               notifications
             </span>
-            <span className="notify_length">{notify.data.length}</span>
+            {notify.data.length > 0 && (
+              <span className="menu_notify_badge">{notify.data.length}</span>
+            )}
           </span>
-
-          <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+          <div className="dropdown-menu menu_dropdown" aria-labelledby="navbarNotify">
             <NotifyModal />
           </div>
         </li>
 
-        <li className="nav-item dropdown" style={{ opacity: "1" }}>
+        <li className="menu_nav_item dropdown">
           <span
-            className="nav-link dropdown-toggle"
-            id="navbarDropdown"
+            className="menu_nav_btn menu_nav_btn_avatar"
+            id="navbarProfile"
             role="button"
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
             <Avatar src={auth.user.avatar} size="medium-avatar" />
           </span>
-          <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
+          <ul className="dropdown-menu menu_dropdown" aria-labelledby="navbarProfile">
             <li>
-              <Link
-                style={{ color: "white" }}
-                className="dropdown-item"
-                to={`/profile/${auth.user._id}`}
-              >
+              <Link className="menu_dropdown_item" to={`/profile/${auth.user._id}`}>
                 Profile
               </Link>
             </li>
             <li>
               <label
-                style={{ color: "white" }}
                 htmlFor="theme"
-                className="dropdown-item"
+                className="menu_dropdown_item"
                 onClick={() =>
                   dispatch({ type: GLOBALTYPES.THEME, payload: !theme })
                 }
@@ -86,14 +80,10 @@ const Menu = () => {
                 {theme ? "Light mode" : "Dark mode"}
               </label>
             </li>
-            <li>
-              <hr className="dropdown-divider" />
-            </li>
-
+            <li><hr className="menu_dropdown_divider" /></li>
             <li>
               <Link
-                style={{ color: "white" }}
-                className="dropdown-item"
+                className="menu_dropdown_item menu_dropdown_item_danger"
                 to="/"
                 onClick={() => dispatch(logout())}
               >
@@ -103,7 +93,7 @@ const Menu = () => {
           </ul>
         </li>
       </ul>
-    </div>
+    </nav>
   );
 };
 

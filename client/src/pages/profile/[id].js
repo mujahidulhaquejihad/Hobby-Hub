@@ -25,7 +25,7 @@ const Profile = () => {
       <div className="profile">
         <Info auth={auth} profile={profile} dispatch={dispatch} id={id} />
 
-        {auth.user._id === id && (
+        {auth.user?._id === id && (
           <div className="profile_tab">
             <button
               className={saveTab ? "" : "active"}

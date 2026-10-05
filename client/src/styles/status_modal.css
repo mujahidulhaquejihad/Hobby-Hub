@@ -1,143 +1,302 @@
-.status_modal{
+/* Modern post create/edit modal – glass card, Outfit, matches auth */
+.status_modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  background: #0008;
+  inset: 0;
+  background: rgba(15, 15, 26, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   width: 100%;
   height: 100vh;
-  z-index: 4;
+  z-index: 100;
   overflow: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 2rem 1rem 3rem;
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  animation: overlayFadeIn 0.25s var(--ease-out);
 }
 
-.status_modal form {
-  max-width: 450px;
+.status_modal_card {
+  max-width: 480px;
   width: 100%;
-  border-radius: 5px;
-  background: white;
-  padding: 20px;
-  margin: 30px auto;
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 20px;
+  padding: 0;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  animation: modalSlideIn 0.3s var(--ease-out);
 }
+
+/* Dark theme override when .theme class or data-theme is used */
+.status_modal .status_modal_card {
+  color: #111;
+}
+
 .status_header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 15px;
-   transform: translateY(-15px);
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-.status_header span {
-  font-size: 2rem;
-  font-weight: 900;
+.status_modal_title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #111;
+}
+
+.status_modal_close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 50%;
   cursor: pointer;
-  transform: translateY(-5px);
+  color: #555;
+  transition: background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
-.status_body textarea{
-    width: 100%;
-    min-height: 150px;
-    border: none;
-    outline: none;
-    resize: none;
+.status_modal_close:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #111;
 }
 
-.status_body .input_images{
-    display: flex;
-    justify-content: center;
-    margin: 10px 0;
+.status_modal_close .material-icons {
+  font-size: 20px;
 }
 
-.status_body .input_images i{
-    font-size: 2rem;
-    cursor: pointer;
+.status_body {
+  padding: 1.25rem 1.5rem;
 }
 
-.status_body .input_images .file_upload{
-    overflow: hidden;
-    position: relative;
-    margin: 0 10px;
-
+.status_modal_textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 12px 0;
+  border: none;
+  outline: none;
+  resize: none;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #111;
+  background: transparent;
 }
 
-.status_body  .file_upload #file{
-    position: absolute;
-    top: 0;
-    left: 0;
-    opacity:0 ;
+.status_modal_textarea::placeholder {
+  color: #888;
 }
 
+.status_modal_actions_row {
+  display: flex;
+  align-items: center;
+  margin: 8px 0 12px;
+}
 
-.status_body .show_images{
-  max-height: 280px;
+.status_body .input_images {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 12px 0;
+  padding: 8px 0;
+}
+
+.input_images_btn,
+.status_body .input_images .file_upload {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(120, 63, 142, 0.12);
+  color: var(--violet);
+  border: none;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out);
+}
+
+.input_images_btn:hover,
+.status_body .input_images .file_upload:hover {
+  background: rgba(120, 63, 142, 0.2);
+  transform: scale(1.05);
+}
+
+.input_images_btn .material-icons,
+.status_body .input_images .file_upload .material-icons {
+  font-size: 22px;
+}
+
+.status_body .file_upload {
+  position: relative;
+  overflow: hidden;
+}
+
+.status_body .file_upload input#file {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.status_body .show_images {
+  max-height: 260px;
   width: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 10px 0;
+  padding: 12px 0;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  place-items: center;
-  grid-gap: 10px;
+  gap: 10px;
+  align-items: center;
 }
 
-.status_body .show_images .file_img{
+.status_body .show_images .file_img {
   position: relative;
   width: 100%;
-  height: 100%;
-
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.06);
 }
 
 .status_body .show_images .file_img img,
-.status_body .show_images .file_img video{
+.status_body .show_images .file_img video {
   display: block;
-  object-fit: contain;
-    width: 100%;
+  object-fit: cover;
+  width: 100%;
   height: 100%;
-  max-height: 100px;
 }
 
-.status_body .show_images .file_img img:hover{
-  animation: tilting 1s infinite linear;
-}
-
-@keyframes tilting{
-  0%{
-    transform: rotate(0deg);
-  }
-  25%{
-    transform: rotate(-3deg);
-  }
-  50%{
-    transform: rotate(0deg);
-  }
-  75%{
-    transform: rotate(3deg);
-  }
-  100%{
-    transform: rotate(0deg);
-  }
-}
-
-.status_body .show_images .file_img span{
+.file_img_remove {
   position: absolute;
-  top: -1px;
-  right: -2px;
-  z-index: 4;
-  background: white;
-  color: crimson;
-  padding: 3px 7px;
-  border: 1px solid crimson;
+  top: 6px;
+  right: 6px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
   border-radius: 50%;
-  font-size: 10px;
-  font-weight: bolder;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
   cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out);
 }
 
-.status_body .stream span{
+.file_img_remove:hover {
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.file_img_remove .material-icons {
+  font-size: 16px;
+}
+
+.status_stream {
+  position: relative;
+  width: 100%;
+  max-height: 320px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+  margin: 12px 0;
+}
+
+.status_stream video {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 320px;
+  object-fit: contain;
+}
+
+.stream_stop {
   position: absolute;
-  top: -10px;
-  right: 5px;
-  color: crimson;
-  font-size: 2rem;
-  font-weight: 900;
+  top: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
   cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out);
+}
+
+.stream_stop:hover {
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.stream_stop .material-icons {
+  font-size: 22px;
+}
+
+.status_footer {
+  padding: 1rem 1.5rem 1.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.status_submit_btn {
+  width: 100%;
+  padding: 14px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 14px;
+}
+
+/* Dark theme: invert card for dark mode */
+.App.mode .status_modal_card {
+  background: rgba(26, 26, 46, 0.98);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.App.mode .status_modal_title,
+.App.mode .status_modal_textarea {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.App.mode .status_modal_textarea::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.App.mode .status_modal_close {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.App.mode .status_modal_close:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+.App.mode .status_header,
+.App.mode .status_footer {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.App.mode .input_images_btn,
+.App.mode .status_body .input_images .file_upload {
+  background: rgba(251, 131, 158, 0.2);
+  color: #fb839e;
+}
+
+.App.mode .input_images_btn:hover,
+.App.mode .status_body .input_images .file_upload:hover {
+  background: rgba(251, 131, 158, 0.35);
 }

@@ -4,7 +4,7 @@ import { imageUpload } from "../../utils/imageUpload";
 import { createNotify, removeNotify } from "./notifyAction";
 // This import is often needed by components that render posts or utilities
 // used by these actions. Adding it here can resolve module conflicts.
-import { v4 as uuidv4 } from 'uuid';
+
 
 
 export const POST_TYPES = {
@@ -24,7 +24,7 @@ export const createPost = ({ content, images, auth, socket }) => async dispatch 
     try {
         dispatch({ type: GLOBALTYPES.ALERT, payload: { loading: true } });
 
-        if (images.length > 0) { media = await imageUpload(images) }
+        if (images.length > 0) { media = await imageUpload(images, auth.token); }
 
         const res = await postDataAPI('posts', { content, images: media }, auth.token);
 
@@ -51,10 +51,10 @@ export const createPost = ({ content, images, auth, socket }) => async dispatch 
         dispatch({
             type: GLOBALTYPES.ALERT,
             payload: {
-                // More robust error handling
-                error: err.response?.data?.msg || "An error occurred while creating the post."
+                loading: false,
+                error: err.response?.data?.msg || err.message || "Post failed. If you added photos, check the upload setup (see below).",
             }
-        })
+        });
     }
 }
 
@@ -87,7 +87,7 @@ export const updatePost = ({ content, images, auth, status }) => async (dispatch
     try {
         dispatch({ type: GLOBALTYPES.ALERT, payload: { loading: true } });
         if (imgNewUrl.length > 0) {
-            media = await imageUpload(imgNewUrl);
+            media = await imageUpload(imgNewUrl, auth.token);
         }
         const res = await patchDataAPI(
             `post/${status._id}`,
@@ -101,7 +101,8 @@ export const updatePost = ({ content, images, auth, status }) => async (dispatch
         dispatch({
             type: GLOBALTYPES.ALERT,
             payload: {
-                error: err.response?.data?.msg || "Could not update the post.",
+                loading: false,
+                error: err.response?.data?.msg || err.message || "Could not update the post.",
             },
         });
     }
@@ -124,7 +125,7 @@ export const likePost = ({ post, auth, socket }) => async (dispatch) => {
             recipients: [post.user._id],
             url: `/post/${post._id}`,
             content: post.content,
-            image: post.images[0].url,
+            image: post.images?.[0]?.url || "",
         };
 
         dispatch(createNotify({ msg, auth, socket }));

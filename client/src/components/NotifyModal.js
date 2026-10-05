@@ -6,96 +6,84 @@ import moment from 'moment';
 import { deleteAllNotifies, isReadNotify, NOTIFY_TYPES } from '../redux/actions/notifyAction';
 
 const NotifyModal = () => {
-    const { auth, notify } = useSelector(state => state);
-    const dispatch = useDispatch();
+  const { auth, notify } = useSelector(state => state);
+  const dispatch = useDispatch();
 
-    const handleIsRead = (msg) => {
-      dispatch(isReadNotify({msg, auth}));
-    };
+  const handleIsRead = (msg) => {
+    dispatch(isReadNotify({ msg, auth }));
+  };
 
-    const handleDeleteAll = () => {
-      const newArr = notify.data.filter(item => item.isRead === false)
-      if(newArr.length === 0) return dispatch(deleteAllNotifies(auth.token))
+  const handleDeleteAll = () => {
+    const newArr = notify.data.filter(item => item.isRead === false);
+    if (newArr.length === 0) return dispatch(deleteAllNotifies(auth.token));
+    if (window.confirm(`You have ${newArr.length} unread notifications. Delete all?`)) {
+      return dispatch(deleteAllNotifies(auth.token));
+    }
+  };
 
-      if(window.confirm(`You have ${newArr.length} unread notifications.Do you want to delete all notifications?`)){
-        return dispatch(deleteAllNotifies(auth.token))
-      }
-    };
+  const handleSound = () => {
+    dispatch({ type: NOTIFY_TYPES.UPDATE_SOUND, payload: !notify.sound });
+  };
 
-    const handleSound = () => {
-      dispatch({type: NOTIFY_TYPES.UPDATE_SOUND, payload: !notify.sound });
-    };
-
-    return (
-      <div
-        className="mt-1"
-        style={{
-          minWidth: "280px",
-          boxShadow: "5px 8px 8px var(--c2) ,-3px -3px 8px var(--c3)",
-          background: "white",
-          borderRadius: "10px",
-          borderTopRightRadius: "0",
-        }}
-      >
-        <div className="d-flex justify-content-between align-items-center">
-          <h3>Notifications</h3>
-          {notify.sound ? (
-            <i
-              className="fas fa-bell text-danger"
-              style={{ fontSize: "1.2rem", cursor: "pointer" }}
-              onClick={handleSound}
-            />
-          ) : (
-            <i
-              className="fas fa-bell-slash text-danger"
-              style={{ fontSize: "1.2rem", cursor: "pointer" }}
-              onClick={handleSound}
-            />
-          )}
-        </div>
-        <hr className="mt-1" />
-        {notify.data.length === 0 && (
-          <span className="text-muted w-100 text-center">No Notifications</span>
-        )}
-        <div style={{ maxHeight: "calc(100vh - 200px)", overflow: "auto" }}>
-          {notify.data.map((msg, index) => (
-            <div className="px-2 mb-3" key={index}>
-              <Link
-                to={`${msg.url}`}
-                style={{ textDecoration: "none" }}
-                className="d-flex text-dark align-items-center"
-                onClick={() => handleIsRead(msg)}
-              >
-                <Avatar src={msg.user.avatar} size="big-avatar" />
-
-                <div className="flex-fill mx-1">
-                  <div>
-                    <strong className="mr-1">{msg.user.username}</strong>
-                    <span>{msg.text}</span>
-                  </div>
-                  {msg.content && <small>{msg.content.slice(0, 20)}...</small>}
-                </div>
-                <div style={{ width: "30px" }}>
-                  {msg.image && <Avatar src={msg.image} size="medium-avatar" />}
-                </div>
-              </Link>
-              <small className="text-muted d-flex justify-content-between px-2">
-                {moment(msg.createdAt).fromNow()}
-                {!msg.isRead && <i className="fas fa-circle color-c1" />}
-              </small>
-            </div>
-          ))}
-        </div>
-        <hr className="my-1" />
-        <div
-          className="text-end my-auto me-2 color-c1"
-          style={{ cursor: "pointer" }}
-          onClick={handleDeleteAll}
+  return (
+    <div className="notify_dropdown">
+      <div className="notify_dropdown_header">
+        <h3 className="notify_dropdown_title">Notifications</h3>
+        <button
+          type="button"
+          className="notify_dropdown_sound"
+          onClick={handleSound}
+          aria-label={notify.sound ? 'Mute notifications' : 'Unmute notifications'}
         >
-          Delete
-        </div>
+          <span className="material-icons">{notify.sound ? 'notifications_active' : 'notifications_off'}</span>
+        </button>
       </div>
-    );
-}
 
-export default NotifyModal
+      <div className="notify_dropdown_list">
+        {notify.data.length === 0 ? (
+          <p className="notify_dropdown_empty">No notifications yet</p>
+        ) : (
+          notify.data.map((msg, index) => (
+            <Link
+              key={index}
+              to={msg.url}
+              className={`notify_dropdown_item ${!msg.isRead ? 'notify_dropdown_item_unread' : ''}`}
+              onClick={() => handleIsRead(msg)}
+            >
+              <Avatar src={msg.user.avatar} size="medium-avatar" />
+              <div className="notify_dropdown_content">
+                <p className="notify_dropdown_text">
+                  <strong>{msg.user.username}</strong>
+                  {' '}{msg.text}
+                </p>
+                {msg.content && (
+                  <span className="notify_dropdown_preview">{msg.content.slice(0, 30)}…</span>
+                )}
+                <span className="notify_dropdown_time">{moment(msg.createdAt).fromNow()}</span>
+              </div>
+              {msg.image && (
+                <Avatar src={msg.image} size="small-avatar" />
+              )}
+              {!msg.isRead && <span className="notify_dropdown_dot" />}
+            </Link>
+          ))
+        )}
+      </div>
+
+      {notify.data.length > 0 && (
+        <>
+          <div className="notify_dropdown_divider" />
+          <button
+            type="button"
+            className="notify_dropdown_clear"
+            onClick={handleDeleteAll}
+          >
+            Clear all
+          </button>
+        </>
+      )}
+    </div>
+  );
+};
+
+export default NotifyModal;

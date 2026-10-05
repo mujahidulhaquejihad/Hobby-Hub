@@ -21,9 +21,8 @@ export const getProfileUsers = ({ id, auth}) => async (dispatch) => {
 
     try {
       dispatch({type: PROFILE_TYPES.LOADING, payload:true});
-      const res =  getDataAPI(`/user/${id}`, auth.token);
-      
-      const res1 =  getDataAPI(`/user_posts/${id}`, auth.token);
+      const res = getDataAPI(`user/${id}`, auth.token);
+      const res1 = getDataAPI(`user_posts/${id}`, auth.token);
 
       const users = await res;
       const posts = await res1;
@@ -34,7 +33,7 @@ export const getProfileUsers = ({ id, auth}) => async (dispatch) => {
       dispatch({ type: PROFILE_TYPES.LOADING, payload: false });
       
     } catch (err) {
-      dispatch({ type: GLOBALTYPES.ALERT, payload: {error: err.response.data.msg} });
+      dispatch({ type: GLOBALTYPES.ALERT, payload: { error: err.response?.data?.msg || err.message || "Could not load profile." } });
     }
   }
 
@@ -52,7 +51,7 @@ export const updateProfileUser = ({userData, avatar, auth}) => async (dispatch) 
     });
   }
 
-  if (userData.story.length > 200) {
+  if ((userData.story || "").length > 200) {
     return dispatch({
       type: GLOBALTYPES.ALERT,
       payload: { error: "Story is too long." },
@@ -66,11 +65,26 @@ export const updateProfileUser = ({userData, avatar, auth}) => async (dispatch) 
       payload: { loading: true }
     });
 
-    if(avatar){
-      media = await imageUpload([avatar]);
+    let avatarUrl = auth.user.avatar;
+    if (avatar) {
+      media = await imageUpload([avatar], auth.token);
+      if (!media || !media[0] || !media[0].url) {
+        dispatch({ type: GLOBALTYPES.ALERT, payload: { loading: false, error: "Profile picture upload failed." } });
+        return;
+      }
+      avatarUrl = media[0].url;
     }
 
-    const res = await patchDataAPI("user", { ...userData, avatar: avatar ? media[0].url : auth.user.avatar }, auth.token);
+    const payload = {
+      fullname: userData.fullname,
+      mobile: userData.mobile || "",
+      address: userData.address || "",
+      story: userData.story || "",
+      website: userData.website || "",
+      gender: userData.gender || "male",
+      avatar: avatarUrl,
+    };
+    const res = await patchDataAPI("user", payload, auth.token);
 
     dispatch({
       type: GLOBALTYPES.AUTH,
@@ -79,20 +93,23 @@ export const updateProfileUser = ({userData, avatar, auth}) => async (dispatch) 
         user: {
           ...auth.user,
           ...userData,
-          avatar: avatar ? media[0].url : auth.user.avatar,
+          avatar: avatarUrl,
         },
       },
     });
    
     dispatch({
       type: GLOBALTYPES.ALERT,
-      payload: { success: res.data.msg },
+      payload: { loading: false, success: res.data.msg },
     });
 
   } catch (err) {
     dispatch({
       type: GLOBALTYPES.ALERT,
-      payload: { error: err.response.data.msg },
+      payload: {
+        loading: false,
+        error: err.response?.data?.msg || err.message || "Profile update failed.",
+      },
     });
   }
 

@@ -37,13 +37,16 @@ const authCtrl = {
         gender,
       });
 
+      await newUser.save();
+
       const access_token = createAccessToken({ id: newUser._id });
       const refresh_token = createRefreshToken({ id: newUser._id });
 
       res.cookie("refreshtoken", refresh_token, {
         httpOnly: true,
         path: "/api/refresh_token",
-        maxAge: 30 * 24 * 60 * 60 * 1000, //validity of 30 days
+        sameSite: "lax",
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
       });
 
       res.json({
@@ -54,10 +57,6 @@ const authCtrl = {
           password: "",
         },
       });
-
-      await newUser.save();
-
-      res.json({ msg: "registered" });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }

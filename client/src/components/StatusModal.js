@@ -78,10 +78,11 @@ const StatusModal = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (images.length === 0) {
+    const hasContent = (content && content.trim()) || images.length > 0;
+    if (!hasContent) {
       return dispatch({
         type: GLOBALTYPES.ALERT,
-        payload: { error: "Add image(s)." },
+        payload: { error: "Add some text or a photo." },
       });
     }
 
@@ -103,42 +104,49 @@ const StatusModal = () => {
   };
 
   useEffect(() => {
-    if (status.onEdit) {
-      setContent(status.content);
-      setImages(status.images);
+    if (status && typeof status === "object" && status.onEdit) {
+      setContent(status.content || "");
+      setImages(status.images || []);
+    } else if (!status) {
+      setContent("");
+      setImages([]);
     }
   }, [status]);
 
   
 
+  const isEdit = status && typeof status === "object" && status.onEdit;
+  const title = isEdit ? "Edit post" : "Create post";
+
   return (
-    <div className="status_modal">
-      <form onSubmit={handleSubmit}>
+    <div className="status_modal" onClick={() => dispatch({ type: GLOBALTYPES.STATUS, payload: false })}>
+      <form
+        className="status_modal_card"
+        onSubmit={handleSubmit}
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="status_header">
-          <h5 className="m-0">Create Post</h5>
-          <span
-            onClick={() =>
-              dispatch({ type: GLOBALTYPES.STATUS, payload: false })
-            }
+          <h2 className="status_modal_title">{title}</h2>
+          <button
+            type="button"
+            className="status_modal_close"
+            aria-label="Close"
+            onClick={() => dispatch({ type: GLOBALTYPES.STATUS, payload: false })}
           >
-            &times;
-          </span>
+            <span className="material-icons">close</span>
+          </button>
         </div>
         <div className="status_body">
           <textarea
+            className="status_modal_textarea"
             onChange={(e) => setContent(e.target.value)}
             value={content}
             name="content"
-            placeholder={`${auth.user.username}, What's on your mind?`}
-            style={{
-              filter: theme ? "invert(1)" : "invert(0)",
-              color: theme ? "white" : "#111",
-              background: theme ? "rgb(0,0,0,0.3)" : "",
-            }}
+            placeholder={isEdit ? "Update your post..." : `${auth.user?.username || "You"}, what's on your mind?`}
           />
 
-          <div className="d-flex">
-            <div className="flex-fill"></div>
+          <div className="status_modal_actions_row">
+            <div className="flex-fill" />
             <Icons setContent={setContent} content={content} theme={theme} />
           </div>
 
@@ -155,40 +163,46 @@ const StatusModal = () => {
                   </>
                 ) : (
                   <>
-                    {img.type.match(/video/i)
-                      ? videoShow(URL.createObjectURL(img, theme))
-                      : imageShow(URL.createObjectURL(img, theme))}
+                    {img.type && img.type.match(/video/i)
+                      ? videoShow(URL.createObjectURL(img), theme)
+                      : imageShow(URL.createObjectURL(img), theme)}
                   </>
                 )}
-                <span onClick={() => deleteImages(index)}>&times;</span>
+                <button type="button" className="file_img_remove" onClick={() => deleteImages(index)} aria-label="Remove">
+                  <span className="material-icons">close</span>
+                </button>
               </div>
             ))}
           </div>
 
           {stream && (
-            <div className="stream position-relative">
+            <div className="status_stream">
               <video
                 width="100%"
                 height="100%"
                 ref={videoRef}
-                style={{ filter: theme ? "invert(1)" : "invert(0)" }}
                 autoPlay
                 muted
               />
-
-              <span onClick={handleStopStream}>&times;</span>
+              <button type="button" className="stream_stop" onClick={handleStopStream} aria-label="Stop camera">
+                <span className="material-icons">close</span>
+              </button>
               <canvas style={{ display: "none" }} ref={refCanvas} />
             </div>
           )}
 
           <div className="input_images">
             {stream ? (
-              <i className="fas fa-camera" onClick={handleCapture} />
+              <button type="button" className="input_images_btn" onClick={handleCapture} aria-label="Capture">
+                <span className="material-icons">camera</span>
+              </button>
             ) : (
               <>
-                <i className="fas fa-camera" onClick={handleStream} />
+                <button type="button" className="input_images_btn" onClick={handleStream} aria-label="Camera">
+                  <span className="material-icons">camera_alt</span>
+                </button>
                 <div className="file_upload">
-                  <i className="fas fa-image" />
+                  <span className="material-icons">photo_library</span>
                   <input
                     onChange={handleChangeImages}
                     type="file"
@@ -203,8 +217,8 @@ const StatusModal = () => {
           </div>
         </div>
         <div className="status_footer">
-          <button type="submit" className="btn btn-primary w-100">
-            Post
+          <button type="submit" className="btn-1 status_submit_btn">
+            {isEdit ? "Update" : "Post"}
           </button>
         </div>
       </form>

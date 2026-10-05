@@ -75,7 +75,7 @@ const RightSide = () => {
       setLoadMedia(true);
 
       let newArr = [];
-      if(media.length > 0) newArr = await imageUpload(media);
+      if (media.length > 0) newArr = await imageUpload(media, auth.token);
 
       const msg = {
         sender: auth.user._id,
@@ -85,7 +85,7 @@ const RightSide = () => {
         createdAt: new Date().toISOString()
       }
       setLoadMedia(false);
-      await dispatch(addMessage({msg, auth, socket}));
+      await dispatch(addMessage({ msg, auth }));
       if (refDisplay.current) {
         refDisplay.current.scrollIntoView({
           behaviour: "smooth",

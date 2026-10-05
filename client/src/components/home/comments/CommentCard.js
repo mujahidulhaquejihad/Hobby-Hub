@@ -9,7 +9,7 @@ import InputComment from '../post_card/InputComment';
 import { updateComment, likeComment, unLikeComment } from '../../../redux/actions/commentAction';
 
 const CommentCard = ({ children, comment, post, commentId }) => {
-    const { auth, theme } = useSelector(state => state);
+    const { auth} = useSelector(state => state);
     const dispatch = useDispatch();
 
     const [content, setContent] = useState('');

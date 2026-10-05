@@ -121,4 +121,9 @@ const SocketServer = (socket) => {
   //#endregion
 }
 
-module.exports = SocketServer;
+function emitToUser(io, recipientId, msg) {
+  const user = users.find((u) => u.id === recipientId);
+  if (user) io.to(user.socketId).emit("addMessageToClient", msg);
+}
+
+module.exports = { SocketServer, emitToUser };

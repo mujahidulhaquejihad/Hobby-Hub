@@ -11,11 +11,13 @@ import Register from "./pages/register";
 import Home from "./pages/home";
 import Alert from "./components/alert/Alert";
 import Header from "./components/header/Header";
+import Footer from "./components/header/Footer";
 import StatusModal from "./components/StatusModal";
 import { refreshToken } from "./redux/actions/authAction";
 import { getPosts } from "./redux/actions/postAction";
 import { getSuggestions } from "./redux/actions/suggestionsAction";
 import { getNotifies } from "./redux/actions/notifyAction";
+import { getConversations } from "./redux/actions/messageAction";
 
 import AdminDashboard from "./pages/adminDashboard";
 import { GLOBALTYPES } from "./redux/actions/globalTypes";
@@ -35,12 +37,13 @@ function App() {
 
 
   useEffect(() => {
-    if (auth.token) {
+    if (auth.token && auth.user) {
       dispatch(getPosts(auth.token));
       dispatch(getSuggestions(auth.token));
       dispatch(getNotifies(auth.token));
+      dispatch(getConversations({ auth }));
     }
-  }, [dispatch, auth.token]);
+  }, [dispatch, auth.token, auth.user]);
 
   useEffect(() => {
     if (!("Notification" in window)) {
@@ -62,12 +65,11 @@ function App() {
       <Alert />
       <input type="checkbox" id="theme" />
       <div className={`App ${(status || modal) && "mode"}`}>
-        <div className="main">
-          {userType === "user" && auth.token && <Header />}
-          {status && <StatusModal />}
-          {auth.token && <SocketClient /> }
+        {userType === "user" && auth.token && <Header />}
+        {status && <StatusModal />}
+        {auth.token && <SocketClient />}
 
-          {/* 2. Wrap all Route components in a <Routes> container */}
+        <main className="main">
           <Routes>
             {/* 3. Use the 'element' prop with JSX instead of the 'component' prop */}
             <Route
@@ -89,9 +91,10 @@ function App() {
                 <Route path="/:page" element={<PageRender />} />
                 <Route path="/:page/:id" element={<PageRender />} />
             </Route>
-            
           </Routes>
-        </div>
+        </main>
+
+        {userType === "user" && auth.token && <Footer />}
       </div>
     </Router>
   );

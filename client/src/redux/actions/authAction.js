@@ -26,7 +26,7 @@ export const login = (data) => async (dispatch) => {
         dispatch({
             type: GLOBALTYPES.ALERT,
             payload: {
-                error: err.response.data.msg
+                error: err.response?.data?.msg || err.message || "Login failed. Check your connection and try again."
             }
         });
     }
@@ -56,7 +56,7 @@ export const adminLogin = (data) => async (dispatch) => {
         dispatch({
             type: GLOBALTYPES.ALERT,
             payload: {
-                error: err.response.data.msg
+                error: err.response?.data?.msg || err.message || "Admin login failed. Check your connection and try again."
             }
         });
     }
@@ -81,7 +81,7 @@ export const refreshToken = () => async (dispatch) => {
             dispatch({
                 type: GLOBALTYPES.ALERT,
                 payload: {
-                    error: err.response.data.msg
+                    error: err.response?.data?.msg || err.message || "Session expired. Please sign in again."
                 }
             });
         }
@@ -114,7 +114,7 @@ export const register = (data) => async (dispatch) => {
         dispatch({
             type: GLOBALTYPES.ALERT,
             payload: {
-                error: err.response.data.msg
+                error: err.response?.data?.msg || err.message || "Registration failed. Check your connection and try again."
             }
         });
     }
@@ -125,7 +125,7 @@ export const changePassword = ({ oldPassword, newPassword, auth }) => async (dis
     try {
         dispatch({ type: GLOBALTYPES.ALERT, payload: { loading: true } });
 
-        const res = await patchDataAPI('user/change_password', { oldPassword, newPassword }, auth.token);
+        const res = await postDataAPI('changePassword', { oldPassword, newPassword }, auth.token);
 
         dispatch({
             type: GLOBALTYPES.ALERT,
@@ -138,7 +138,7 @@ export const changePassword = ({ oldPassword, newPassword, auth }) => async (dis
         dispatch({
             type: GLOBALTYPES.ALERT,
             payload: {
-                error: err.response.data.msg
+                error: err.response?.data?.msg || err.message || "Something went wrong."
             }
         });
     }
@@ -153,7 +153,7 @@ export const logout = () => async (dispatch) => {
         dispatch({
             type: GLOBALTYPES.ALERT,
             payload: {
-                error: err.response.data.msg
+                error: err.response?.data?.msg || err.message || "Logout failed."
             }
         });
     }

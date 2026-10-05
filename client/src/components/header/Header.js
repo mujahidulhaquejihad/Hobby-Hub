@@ -5,7 +5,7 @@ import Search from "./Search";
 import { useDispatch, useSelector } from "react-redux";
 import { getPosts } from '../../redux/actions/postAction';
 import { getSuggestions } from '../../redux/actions/suggestionsAction';
-
+import logo from '../../images/UniBook.png';
 
 const Header = () => {
   const { auth } = useSelector(state => state);
@@ -18,20 +18,15 @@ const Header = () => {
   };
 
   return (
-    <div className="header bg-light">
-      <nav className="navbar navbar-expand-lg navbar-light bg-light justify-content-between">
-        <div className="container-fluid">
-          <Link to="/" className="logo" onClick={handleRefreshHome}>
-            <h1 className="navbar-brand text-uppercase p-0 m-0">HobbyHub</h1>
-          </Link>
-
-          <Search />
-
-          <Menu />
-         
-        </div>
-      </nav>
-    </div>
+    <header className="app_header">
+      <div className="app_header_inner">
+        <Link to="/" className="app_header_logo" onClick={handleRefreshHome}>
+          <img src={logo} alt="UniBook" className="app_header_logo_img" />
+        </Link>
+        <Search />
+        <Menu />
+      </div>
+    </header>
   );
 };
 

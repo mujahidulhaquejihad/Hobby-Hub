@@ -3,11 +3,18 @@ const Users = require("../models/userModel");
 const userCtrl = {
   searchUser: async (req, res) => {
     try {
+      const username = (req.query.username || "").trim();
+      if (!username) {
+        return res.json({ users: [] });
+      }
       const users = await Users.find({
-        username: { $regex: req.query.username },
+        $or: [
+          { username: { $regex: username, $options: "i" } },
+          { fullname: { $regex: username, $options: "i" } },
+        ],
       })
-        .limit(10)
-        .select("fullname username avatar");
+        .limit(20)
+        .select("fullname username avatar email");
 
       res.json({ users });
     } catch (err) {

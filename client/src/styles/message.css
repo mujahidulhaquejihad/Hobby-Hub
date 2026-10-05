@@ -1,10 +1,51 @@
-.message{
-    width: 100%;
-    height: calc(100vh - 100px);
-    border: 1px solid #ddd;
-    margin-top: 15px;
-    border-radius: 3px;
-    background: #fbfbfb;
+.message {
+  width: 100%;
+  height: calc(100vh - 100px);
+  margin-top: 16px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  display: flex;
+}
+
+.message_left {
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.message_right {
+  background: #f0f2f5;
+}
+
+.message_placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 40px;
+  text-align: center;
+  color: #65676b;
+}
+
+.message_placeholder .material-icons {
+  font-size: 64px;
+  opacity: 0.4;
+  margin-bottom: 16px;
+}
+
+.message_placeholder h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+}
+
+.message_placeholder p {
+  font-size: 0.9375rem;
+  max-width: 280px;
+  margin: 0;
+  line-height: 1.4;
 }
 
 

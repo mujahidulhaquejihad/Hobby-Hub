@@ -1,7 +1,9 @@
 const router = require('express').Router();
-const authCtrl = require('../controllers/authCtrl');
 const auth = require('../middleware/auth');
 
+const authCtrl = process.env.DATABASE_URL
+  ? require('../controllers/authCtrlPg')
+  : require('../controllers/authCtrl');
 
 router.post('/register', authCtrl.register);
 router.post("/register_admin", authCtrl.registerAdmin);
